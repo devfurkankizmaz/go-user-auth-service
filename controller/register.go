@@ -31,6 +31,12 @@ func (r *RegisterController) Register(c *gin.Context) {
 		return
 	}
 
+	err = utils.VerifyPassword(payload.Password, payload.ConfirmPassword)
+	if err != nil {
+		c.JSON(http.StatusConflict, gin.H{"Message": err.Error()})
+		return
+	}
+
 	hashedPassword, err := utils.HashPassword(payload.Password)
 	payload.Password = hashedPassword
 	if err != nil {
