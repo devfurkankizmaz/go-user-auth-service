@@ -2,9 +2,13 @@ package service
 
 import (
 	"context"
+	"log"
+	"strings"
 	"time"
 
 	"github.com/devfurkankizmaz/go-user-auth-service/model"
+	"github.com/devfurkankizmaz/go-user-auth-service/utils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type registerService struct {
@@ -19,10 +23,25 @@ func NewRegisterService(userRepository model.UserRepository, timeout time.Durati
 	}
 }
 
-func (s *registerService) Save(c context.Context, user *model.User) error {
+func (s *registerService) Save(c context.Context, payload *model.RegisterRequest) error {
 	ctx, cancel := context.WithTimeout(c, s.contextTimeout)
 	defer cancel()
-	return s.userRepository.Save(ctx, user)
+
+	hashedPassword, err := utils.HashPassword(payload.Password)
+	payload.Password = hashedPassword
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	newUser := model.User{
+		ID:       primitive.NewObjectID(),
+		Name:     payload.Name,
+		Email:    strings.ToLower(payload.Email),
+		Password: payload.Password,
+	}
+
+	return s.userRepository.Save(ctx, &newUser)
 }
 
 func (s *registerService) GetUserByEmail(c context.Context, email string) (model.User, error) {
