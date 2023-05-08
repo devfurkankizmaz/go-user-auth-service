@@ -38,18 +38,18 @@ func (r *RegisterController) Register(c *gin.Context) {
 		return
 	}
 
-	user := model.User{
+	newUser := model.User{
 		ID:       primitive.NewObjectID(),
 		Name:     payload.Name,
 		Email:    payload.Email,
 		Password: payload.Password,
 	}
 
-	err = r.RegisterService.Save(c, &user)
+	err = r.RegisterService.Save(c, &newUser)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"Message": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"Message:": fmt.Sprintf("Inserted ID %v", user.ID.Hex())})
+	c.JSON(http.StatusOK, gin.H{"Message:": fmt.Sprintf("Inserted ID %v", newUser.ID.Hex())})
 }
