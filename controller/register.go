@@ -8,7 +8,6 @@ import (
 	"github.com/devfurkankizmaz/go-user-auth-service/model"
 	"github.com/devfurkankizmaz/go-user-auth-service/utils"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type RegisterController struct {
@@ -31,31 +30,23 @@ func (r *RegisterController) Register(c *gin.Context) {
 		return
 	}
 
+	err = utils.EmailValid(payload.Email)
+	if err != nil {
+		c.JSON(http.StatusConflict, gin.H{"Message": err.Error()})
+		return
+	}
+
 	err = utils.VerifyPassword(payload.Password, payload.ConfirmPassword)
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"Message": err.Error()})
 		return
 	}
 
-	hashedPassword, err := utils.HashPassword(payload.Password)
-	payload.Password = hashedPassword
+	err = r.RegisterService.Save(c, &payload)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"Message": err.Error()})
 		return
 	}
 
-	newUser := model.User{
-		ID:       primitive.NewObjectID(),
-		Name:     payload.Name,
-		Email:    payload.Email,
-		Password: payload.Password,
-	}
-
-	err = r.RegisterService.Save(c, &newUser)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"Message": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"Message:": fmt.Sprintf("Inserted ID %v", newUser.ID.Hex())})
+	c.JSON(http.StatusOK, gin.H{"Message:": fmt.Sprintf("Inserted User Email: %v", payload.Email)})
 }
