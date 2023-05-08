@@ -8,7 +8,7 @@ import (
 	jwt "github.com/golang-jwt/jwt/v4"
 )
 
-func CreateAccessToken(user *model.User, secret string, expiry int) (accessToken string, err error) {
+func GenAccessToken(user *model.User, secret string, expiry int) (accessToken string, err error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry)).Unix()
 	claims := &model.JwtCustomClaims{
 		Name: user.Name,
@@ -25,7 +25,7 @@ func CreateAccessToken(user *model.User, secret string, expiry int) (accessToken
 	return t, err
 }
 
-func CreateRefreshToken(user *model.User, secret string, expiry int) (refreshToken string, err error) {
+func GenRefreshToken(user *model.User, secret string, expiry int) (refreshToken string, err error) {
 	claimsRefresh := &model.JwtCustomRefreshClaims{
 		ID: user.ID.Hex(),
 		StandardClaims: jwt.StandardClaims{
@@ -53,7 +53,7 @@ func IsAuthorized(requestToken string, secret string) (bool, error) {
 	return true, nil
 }
 
-func ExtractIDFromToken(requestToken string, secret string) (string, error) {
+func GetIDFromToken(requestToken string, secret string) (string, error) {
 	token, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

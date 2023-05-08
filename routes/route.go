@@ -11,4 +11,5 @@ import (
 func Setup(env *config.Env, timeout time.Duration, db mongo.Database, gin *gin.Engine) {
 	rg := gin.Group("")
 	NewRegisterRouter(env, timeout, db, rg)
+	NewLoginRouter(env, timeout, db, rg)
 }

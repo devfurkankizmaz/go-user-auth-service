@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/devfurkankizmaz/go-user-auth-service/config"
@@ -42,5 +41,5 @@ func (r *RegisterController) Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"Message:": fmt.Sprintf("Inserted User Email: %v", payload.Email)})
+	c.JSON(http.StatusOK, gin.H{"Message:": "User Created"})
 }

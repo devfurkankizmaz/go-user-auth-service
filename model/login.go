@@ -9,4 +9,6 @@ type LoginRequest struct {
 
 type LoginService interface {
 	GetUserByEmail(c context.Context, email string) (User, error)
+	GenAccessToken(user *User, secret string, expiry int) (accessToken string, err error)
+	GenRefreshToken(user *User, secret string, expiry int) (refreshToken string, err error)
 }
