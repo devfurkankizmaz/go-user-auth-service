@@ -10,6 +10,6 @@ type RegisterRequest struct {
 }
 
 type RegisterService interface {
-	Save(c context.Context, user *User) error
+	Save(c context.Context, user *RegisterRequest) error
 	GetUserByEmail(c context.Context, email string) (User, error)
 }
